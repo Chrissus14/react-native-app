@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 import * as Yup from "yup";
+import * as Location from "expo-location";
 
 import {
   AppForm,
@@ -80,6 +81,20 @@ const categories = [
 ];
 
 const ListingEditScreen = () => {
+  const [location, setLocation] = React.useState();
+  const getLocation = async () => {
+    let { granted } = await Location.requestPermissionsAsync();
+    if (!granted) return;
+
+    let {
+      coords: { latitude, longitude },
+    } = await Location.getLastKnownPositionAsync();
+    setLocation({ latitude, longitude });
+  };
+
+  React.useEffect(() => {
+    getLocation();
+  }, []);
   return (
     <Screen style={styles.container}>
       <AppForm
@@ -90,7 +105,7 @@ const ListingEditScreen = () => {
           category: null,
           images: [],
         }}
-        onSubmit={(values) => console.log(values)}
+        onSubmit={(values) => console.log(location)}
         validationSchema={validationSchema}
       >
         <FormImagePicker name="images" />
